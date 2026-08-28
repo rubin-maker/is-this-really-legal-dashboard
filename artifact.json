@@ -1,0 +1,1172 @@
+{
+  "surface": "dashboard",
+  "manifest": {
+    "version": 1,
+    "surface": "dashboard",
+    "title": "Is This Really Legal? Social Performance Dashboard",
+    "description": "Public performance snapshot for Apple Podcasts, Instagram, and YouTube through August 28, 2026.",
+    "generatedAt": "2026-08-28T23:00:00Z",
+    "cards": [
+      {
+        "id": "apple_listeners",
+        "description": "Median unique listeners across nine episodes at least seven days old.",
+        "dataset": "summary",
+        "sourceId": "apple_csv",
+        "metrics": [
+          {
+            "label": "Apple mature listeners",
+            "field": "apple_median_mature_listeners",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "apple_engagement",
+        "description": "Unique engaged listeners divided by unique listeners across mature episodes.",
+        "dataset": "summary",
+        "sourceId": "apple_csv",
+        "metrics": [
+          {
+            "label": "Apple engaged rate",
+            "field": "apple_mature_engaged_rate",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "instagram_views",
+        "description": "Cumulative views across 20 exported Instagram posts.",
+        "dataset": "summary",
+        "sourceId": "instagram_csv",
+        "metrics": [
+          {
+            "label": "Instagram views",
+            "field": "instagram_views",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "instagram_follows",
+        "description": "Follows attributed to the 20 exported Instagram posts.",
+        "dataset": "summary",
+        "sourceId": "instagram_csv",
+        "metrics": [
+          {
+            "label": "Instagram follows",
+            "field": "instagram_follows",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "youtube_views",
+        "description": "Cumulative views across 35 measured YouTube uploads.",
+        "dataset": "summary",
+        "sourceId": "youtube_xlsx",
+        "metrics": [
+          {
+            "label": "YouTube views",
+            "field": "youtube_views",
+            "format": "compact"
+          }
+        ]
+      },
+      {
+        "id": "youtube_watch",
+        "description": "Cumulative watch hours across measured YouTube uploads.",
+        "dataset": "summary",
+        "sourceId": "youtube_xlsx",
+        "metrics": [
+          {
+            "label": "YouTube watch hours",
+            "field": "youtube_watch_hours",
+            "format": "compact"
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "youtube_weekly_views",
+        "title": "YouTube views by publish week",
+        "subtitle": "Current cumulative views for measured videos at least seven days old, grouped by publish week.",
+        "intent": "trend",
+        "type": "line",
+        "dataset": "youtube_weekly_mature",
+        "sourceId": "youtube_xlsx",
+        "encodings": {
+          "x": {
+            "field": "week_start",
+            "type": "temporal",
+            "label": "Publish week"
+          },
+          "y": {
+            "field": "views",
+            "type": "quantitative",
+            "label": "Views",
+            "format": "compact"
+          },
+          "color": {
+            "field": "product",
+            "type": "nominal",
+            "label": "Product"
+          }
+        },
+        "xAxisTitle": "Publish week",
+        "yAxisTitle": "Cumulative views",
+        "valueFormat": "compact",
+        "layout": "full"
+      },
+      {
+        "id": "apple_episode_listeners",
+        "title": "Apple listener reach by mature episode",
+        "subtitle": "Unique listeners for episodes at least seven days old; the newest episode is excluded.",
+        "intent": "comparison",
+        "type": "horizontalBar",
+        "dataset": "apple_mature",
+        "sourceId": "apple_csv",
+        "encodings": {
+          "x": {
+            "field": "episode_short",
+            "type": "nominal",
+            "label": "Episode"
+          },
+          "y": {
+            "field": "unique_listeners",
+            "type": "quantitative",
+            "label": "Unique listeners",
+            "format": "number"
+          }
+        },
+        "xAxisTitle": "Episode",
+        "yAxisTitle": "Unique listeners",
+        "valueFormat": "number",
+        "layout": "full"
+      },
+      {
+        "id": "instagram_top_posts",
+        "title": "Instagram’s highest-viewed mature posts",
+        "subtitle": "Lifetime views for the six strongest posts, all at least seven days old.",
+        "intent": "comparison",
+        "type": "horizontalBar",
+        "dataset": "instagram_top",
+        "sourceId": "instagram_csv",
+        "encodings": {
+          "x": {
+            "field": "post_label",
+            "type": "nominal",
+            "label": "Post"
+          },
+          "y": {
+            "field": "views",
+            "type": "quantitative",
+            "label": "Views",
+            "format": "compact"
+          }
+        },
+        "xAxisTitle": "Post",
+        "yAxisTitle": "Views",
+        "valueFormat": "compact",
+        "layout": "full"
+      },
+      {
+        "id": "instagram_weekly_views",
+        "title": "Instagram views by publish week",
+        "subtitle": "Lifetime views for posts at least seven days old, grouped by publish week; zero denotes no mature post that week.",
+        "intent": "trend",
+        "type": "line",
+        "dataset": "instagram_weekly_mature",
+        "sourceId": "instagram_csv",
+        "encodings": {
+          "x": {
+            "field": "week_start",
+            "type": "temporal",
+            "label": "Publish week"
+          },
+          "y": {
+            "field": "views",
+            "type": "quantitative",
+            "label": "Views",
+            "format": "compact"
+          }
+        },
+        "xAxisTitle": "Publish week",
+        "yAxisTitle": "Cumulative views",
+        "valueFormat": "compact",
+        "layout": "full"
+      }
+    ],
+    "tables": [
+      {
+        "id": "youtube_product_mix",
+        "title": "YouTube product mix",
+        "subtitle": "Measured performance by video format; missing-view uploads remain in published counts.",
+        "dataset": "youtube_product_summary",
+        "sourceId": "youtube_xlsx",
+        "columns": [
+          {
+            "field": "product",
+            "label": "Format",
+            "type": "text"
+          },
+          {
+            "field": "published_videos",
+            "label": "Published",
+            "format": "number"
+          },
+          {
+            "field": "measured_videos",
+            "label": "Measured",
+            "format": "number"
+          },
+          {
+            "field": "views",
+            "label": "Views",
+            "format": "compact"
+          },
+          {
+            "field": "watch_hours",
+            "label": "Watch hours",
+            "format": "compact"
+          },
+          {
+            "field": "subscribers_gained",
+            "label": "Subscribers",
+            "format": "number"
+          }
+        ],
+        "layout": "full"
+      },
+      {
+        "id": "apple_episode_detail",
+        "title": "Apple mature-episode detail",
+        "subtitle": "Episodes at least seven days old, sorted by unique listeners.",
+        "dataset": "apple_mature",
+        "sourceId": "apple_csv",
+        "defaultSort": {
+          "field": "unique_listeners",
+          "direction": "desc"
+        },
+        "density": "dense",
+        "columns": [
+          {
+            "field": "episode_short",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "field": "release_date",
+            "label": "Released",
+            "type": "date"
+          },
+          {
+            "field": "unique_listeners",
+            "label": "Listeners",
+            "format": "number"
+          },
+          {
+            "field": "plays",
+            "label": "Plays",
+            "format": "number"
+          },
+          {
+            "field": "engaged_rate",
+            "label": "Engaged rate",
+            "format": "percent"
+          }
+        ],
+        "layout": "full"
+      },
+      {
+        "id": "instagram_acquisition_posts",
+        "title": "Top Instagram posts: reach and conversion signals",
+        "subtitle": "The same six mature posts, with engagement and attributed follows.",
+        "dataset": "instagram_top",
+        "sourceId": "instagram_csv",
+        "columns": [
+          {
+            "field": "post_label",
+            "label": "Post",
+            "type": "text"
+          },
+          {
+            "field": "publish_date",
+            "label": "Published",
+            "type": "date"
+          },
+          {
+            "field": "views",
+            "label": "Views",
+            "format": "compact"
+          },
+          {
+            "field": "engagements",
+            "label": "Engagements",
+            "format": "compact"
+          },
+          {
+            "field": "follows",
+            "label": "Follows",
+            "format": "number"
+          },
+          {
+            "field": "engagement_rate_views",
+            "label": "Engagement rate",
+            "format": "percent"
+          }
+        ],
+        "layout": "full"
+      },
+      {
+        "id": "data_quality",
+        "title": "Source quality and coverage",
+        "subtitle": "Grain, coverage, and gaps used to scope the conclusions.",
+        "dataset": "data_quality",
+        "sourceId": "quality_qa",
+        "columns": [
+          {
+            "field": "source",
+            "label": "Source",
+            "type": "text"
+          },
+          {
+            "field": "grain",
+            "label": "Grain",
+            "type": "text"
+          },
+          {
+            "field": "rows",
+            "label": "Rows",
+            "format": "number"
+          },
+          {
+            "field": "date_start",
+            "label": "Start",
+            "type": "date"
+          },
+          {
+            "field": "date_end",
+            "label": "End",
+            "type": "date"
+          },
+          {
+            "field": "missing_headline_metrics",
+            "label": "Missing headline metrics",
+            "format": "number"
+          },
+          {
+            "field": "quality_note",
+            "label": "Scope note",
+            "type": "text"
+          }
+        ],
+        "layout": "full"
+      }
+    ],
+    "sources": [
+      {
+        "id": "apple_csv",
+        "label": "Apple Podcasts episode export",
+        "path": "apple podcast.csv",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "query": "pd.read_csv('apple podcast.csv'); derive 7-day maturity, engaged_listener_rate, plays_per_listener, and episode aggregates",
+          "sql": "SELECT release_date, episode, days_live, maturity, unique_listeners, engaged_listeners, engaged_rate, plays, plays_per_listener, average_consumption_pct FROM normalized_apple_episode_performance",
+          "description": "Episode-level Apple Podcasts metrics normalized and ranked using a seven-day maturity rule.",
+          "executed_at": "2026-08-28T23:00:00Z",
+          "tables_used": [
+            "apple podcast.csv"
+          ],
+          "metric_definitions": [
+            "Mature episode: at least 7 days since release as of 2026-08-28.",
+            "Engaged-listener rate = unique engaged listeners / unique listeners across mature episodes.",
+            "Average consumption is listener-weighted across mature episodes and may exceed 100% with replay behavior."
+          ]
+        }
+      },
+      {
+        "id": "instagram_csv",
+        "label": "Instagram post export",
+        "path": "instagram is this really legal.csv",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "query": "pd.read_csv('instagram is this really legal.csv'); engagements = likes + shares + comments + saves; group mature posts by publish week",
+          "sql": "SELECT publish_date, description, post_type, url, days_live, maturity, views, reach, engagements, follows, engagement_rate_views FROM normalized_instagram_post_performance",
+          "description": "Post-level lifetime metrics normalized with a seven-day maturity rule for rankings and weekly publish cohorts.",
+          "executed_at": "2026-08-28T23:00:00Z",
+          "tables_used": [
+            "instagram is this really legal.csv"
+          ],
+          "metric_definitions": [
+            "Engagements = likes + shares + comments + saves.",
+            "View-based engagement rate = engagements / views.",
+            "Weekly views are lifetime post totals grouped by publish week, not activity earned during that week."
+          ]
+        }
+      },
+      {
+        "id": "youtube_xlsx",
+        "label": "YouTube performance workbook",
+        "path": "liz_oyer_youtube_performance_2026.xlsx",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "query": "pd.read_excel('liz_oyer_youtube_performance_2026.xlsx', sheet_name=['Long Data','Shorts Data']); exclude missing-view rows from measured rankings",
+          "sql": "SELECT publish_date, title, product, content_id, days_live, maturity, views, watch_hours, engagements, subscribers_gained, average_pct_viewed, impressions_ctr_pct FROM normalized_youtube_video_performance",
+          "description": "Individual YouTube video rows through 2026-08-28, separated into Long-Form and Shorts without aggregate Total rows.",
+          "executed_at": "2026-08-28T23:00:00Z",
+          "tables_used": [
+            "Long Data",
+            "Shorts Data",
+            "Overview",
+            "Definitions"
+          ],
+          "metric_definitions": [
+            "Measured video: an individual video row with a non-null Views value.",
+            "Weekly views are current cumulative video totals grouped by publish week.",
+            "Long-Form and Shorts are separated; aggregate Total rows are excluded."
+          ]
+        }
+      },
+      {
+        "id": "quality_qa",
+        "label": "Three-source data quality profile",
+        "path": "work/itrl_analysis/validation.json",
+        "query": {
+          "engine": "python",
+          "language": "python",
+          "query": "validate_analysis.py; reconcile row counts, identifiers, nonnegative metrics, and YouTube Overview totals",
+          "sql": "SELECT source, grain, rows, date_start, date_end, duplicate_keys, missing_headline_metrics, quality_note FROM normalized_data_quality",
+          "description": "Independent QA profile covering all three input exports; 18 of 18 validation checks passed.",
+          "executed_at": "2026-08-28T23:00:00Z",
+          "tables_used": [
+            "apple podcast.csv",
+            "instagram is this really legal.csv",
+            "liz_oyer_youtube_performance_2026.xlsx"
+          ]
+        }
+      }
+    ],
+    "blocks": [
+      {
+        "id": "scope",
+        "type": "markdown",
+        "body": "**Public performance snapshot through Aug 28, 2026.** Platform totals are cumulative; mature rankings require at least seven days since publication."
+      },
+      {
+        "id": "hero_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "apple_listeners",
+          "apple_engagement",
+          "instagram_views",
+          "instagram_follows",
+          "youtube_views",
+          "youtube_watch"
+        ]
+      },
+      {
+        "id": "youtube_heading",
+        "type": "markdown",
+        "body": "## YouTube: Shorts create reach; Long-Form creates depth"
+      },
+      {
+        "id": "youtube_trend",
+        "type": "chart",
+        "chartId": "youtube_weekly_views",
+        "layout": "full"
+      },
+      {
+        "id": "youtube_mix",
+        "type": "table",
+        "tableId": "youtube_product_mix",
+        "layout": "full"
+      },
+      {
+        "id": "apple_heading",
+        "type": "markdown",
+        "body": "## Apple: the Navy Commander episode leads the mature catalog"
+      },
+      {
+        "id": "apple_ranking",
+        "type": "chart",
+        "chartId": "apple_episode_listeners",
+        "layout": "full"
+      },
+      {
+        "id": "apple_detail",
+        "type": "table",
+        "tableId": "apple_episode_detail",
+        "layout": "full"
+      },
+      {
+        "id": "instagram_heading",
+        "type": "markdown",
+        "body": "## Instagram: launch and explainer creative drive acquisition"
+      },
+      {
+        "id": "instagram_ranking",
+        "type": "chart",
+        "chartId": "instagram_top_posts",
+        "layout": "full"
+      },
+      {
+        "id": "instagram_trend",
+        "type": "chart",
+        "chartId": "instagram_weekly_views",
+        "layout": "full"
+      },
+      {
+        "id": "instagram_detail",
+        "type": "table",
+        "tableId": "instagram_acquisition_posts",
+        "layout": "full"
+      },
+      {
+        "id": "actions",
+        "type": "markdown",
+        "body": "## What to do next\n\n- Pair every episode with one clear explainer and two or three topical clips.\n- Prioritize government-power and institutional-accountability topics.\n- Track every release at 7, 14, and 28 days so comparisons use equal maturity."
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Data notes\n\nCross-platform totals measure different behaviors and should not be added together. Instagram reach is summed at the post level, not deduplicated across the account. Six YouTube uploads lack view metrics and are excluded from measured rankings. Apple consumption may exceed 100% when replay behavior is present."
+      },
+      {
+        "id": "quality",
+        "type": "table",
+        "tableId": "data_quality",
+        "layout": "full"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-28T23:00:00Z",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "apple_median_mature_listeners": 1682.0,
+          "apple_mature_engaged_rate": 0.6576642335766424,
+          "apple_mature_consumption": 0.8588610513988383,
+          "instagram_views": 1735711,
+          "instagram_follows": 43166,
+          "instagram_engagement_rate": 0.10379204833062647,
+          "youtube_views": 468383,
+          "youtube_watch_hours": 45265.6,
+          "youtube_subscribers": 7123
+        }
+      ],
+      "apple_mature": [
+        {
+          "release_date": "2026-08-20",
+          "episode": "A Navy Commander's Take on the U.S.S. Lincoln",
+          "days_live": 8,
+          "maturity": "7+ days",
+          "unique_listeners": 2574,
+          "engaged_listeners": 1742,
+          "engaged_rate": 0.6767676767676768,
+          "plays": 8457,
+          "plays_per_listener": 3.2855477855477857,
+          "average_consumption_pct": 70.20550794705383,
+          "episode_short": "Navy Commander / U.S.S. Lincoln"
+        },
+        {
+          "release_date": "2026-08-06",
+          "episode": "The Truth About Election Administration",
+          "days_live": 22,
+          "maturity": "7+ days",
+          "unique_listeners": 2206,
+          "engaged_listeners": 1184,
+          "engaged_rate": 0.5367180417044425,
+          "plays": 7820,
+          "plays_per_listener": 3.5448776065276517,
+          "average_consumption_pct": 58.94389855421377,
+          "episode_short": "Election Administration"
+        },
+        {
+          "release_date": "2026-07-09",
+          "episode": "Can the Justice Department Rebuild Public Trust?",
+          "days_live": 50,
+          "maturity": "7+ days",
+          "unique_listeners": 1835,
+          "engaged_listeners": 1270,
+          "engaged_rate": 0.6920980926430518,
+          "plays": 14401,
+          "plays_per_listener": 7.847956403269754,
+          "average_consumption_pct": 151.0615284056008,
+          "episode_short": "DOJ Public Trust"
+        },
+        {
+          "release_date": "2026-06-25",
+          "episode": "The Ins and Outs of DOJ with Liz Oyer",
+          "days_live": 64,
+          "maturity": "7+ days",
+          "unique_listeners": 1795,
+          "engaged_listeners": 1062,
+          "engaged_rate": 0.5916434540389972,
+          "plays": 7138,
+          "plays_per_listener": 3.9766016713091923,
+          "average_consumption_pct": 61.76298953205887,
+          "episode_short": "DOJ with Liz Oyer"
+        },
+        {
+          "release_date": "2026-07-02",
+          "episode": "How the Senate Confirmation Process Really Works",
+          "days_live": 57,
+          "maturity": "7+ days",
+          "unique_listeners": 1682,
+          "engaged_listeners": 1095,
+          "engaged_rate": 0.6510107015457788,
+          "plays": 6443,
+          "plays_per_listener": 3.830558858501784,
+          "average_consumption_pct": 70.91164021378744,
+          "episode_short": "Senate Confirmation"
+        },
+        {
+          "release_date": "2026-08-17",
+          "episode": "Inside America's Law Firm: How DOJ Actually Works",
+          "days_live": 11,
+          "maturity": "7+ days",
+          "unique_listeners": 1561,
+          "engaged_listeners": 1189,
+          "engaged_rate": 0.7616912235746316,
+          "plays": 2637,
+          "plays_per_listener": 1.689301729660474,
+          "average_consumption_pct": 76.34140896472735,
+          "episode_short": "Inside DOJ"
+        },
+        {
+          "release_date": "2026-07-23",
+          "episode": "Finding Your Own Justice",
+          "days_live": 36,
+          "maturity": "7+ days",
+          "unique_listeners": 1509,
+          "engaged_listeners": 1064,
+          "engaged_rate": 0.7051027170311465,
+          "plays": 9013,
+          "plays_per_listener": 5.972829688535454,
+          "average_consumption_pct": 143.8911056059756,
+          "episode_short": "Finding Your Own Justice"
+        },
+        {
+          "release_date": "2026-07-30",
+          "episode": "The State of Antitrust Enforcement",
+          "days_live": 29,
+          "maturity": "7+ days",
+          "unique_listeners": 1325,
+          "engaged_listeners": 785,
+          "engaged_rate": 0.5924528301886792,
+          "plays": 4440,
+          "plays_per_listener": 3.3509433962264152,
+          "average_consumption_pct": 66.06324657917607,
+          "episode_short": "Antitrust Enforcement"
+        },
+        {
+          "release_date": "2026-06-03",
+          "episode": "Is This Really Legal? | Podcast Trailer",
+          "days_live": 86,
+          "maturity": "7+ days",
+          "unique_listeners": 583,
+          "engaged_listeners": 520,
+          "engaged_rate": 0.8919382504288165,
+          "plays": 707,
+          "plays_per_listener": 1.2126929674099485,
+          "average_consumption_pct": 89.86984159015236,
+          "episode_short": "Podcast Trailer"
+        }
+      ],
+      "instagram_top": [
+        {
+          "publish_date": "2026-06-23",
+          "description": "Welcome to the official Instagram account of @lawyer_oyer ‘s new podcast. Is This Really Legal? is available at the link in our bio or wherever you get your podcasts.",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/DZ78yzsomkm/",
+          "days_live": 66,
+          "maturity": "7+ days",
+          "views": 348341,
+          "reach": 258011,
+          "engagements": 62207,
+          "follows": 24355,
+          "engagement_rate_views": 0.17858075850962132,
+          "post_label": "Official account launch"
+        },
+        {
+          "publish_date": "2026-08-12",
+          "description": "\"Is This Really Legal?\" answers real questions about government power, in plain English. No law degree required. Your host, @lawyer_oyer, is a former public defender and former Par",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/Db9Io1TIpCW/",
+          "days_live": 16,
+          "maturity": "7+ days",
+          "views": 206328,
+          "reach": 161066,
+          "engagements": 31339,
+          "follows": 16830,
+          "engagement_rate_views": 0.1518892249234229,
+          "post_label": "Show explainer"
+        },
+        {
+          "publish_date": "2026-07-25",
+          "description": "\"We're done with this Epstein name. We're calling you guys the Golden Warriors now.\" Advocate Dani Bensky tells Liz some of the names her fellow survivors have brainstormed for the",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/DbORve2oQLw/",
+          "days_live": 34,
+          "maturity": "7+ days",
+          "views": 192440,
+          "reach": 155134,
+          "engagements": 14936,
+          "follows": 253,
+          "engagement_rate_views": 0.07761380170442736,
+          "post_label": "‘Golden Warriors’ clip"
+        },
+        {
+          "publish_date": "2026-07-01",
+          "description": "It was just reported that Donald Trump made over $2 billion during the first year of his presidency. My friend @katiecouric asked me: Is this really legal? Watch and subscribe to @",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/DaQZlJ8x0L5/",
+          "days_live": 58,
+          "maturity": "7+ days",
+          "views": 156743,
+          "reach": 116557,
+          "engagements": 17516,
+          "follows": 59,
+          "engagement_rate_views": 0.11174980700892544,
+          "post_label": "Presidential earnings explainer"
+        },
+        {
+          "publish_date": "2026-08-20",
+          "description": "Liz talks with retired Navy Commander Bobby Jones about the 200-plus consecutive days the crew of the U.S.S. Abraham Lincoln has spent at sea without a port call — and why service ",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/DcRhMeoBFrW/",
+          "days_live": 8,
+          "maturity": "7+ days",
+          "views": 118191,
+          "reach": 78954,
+          "engagements": 8145,
+          "follows": 139,
+          "engagement_rate_views": 0.06891387669111862,
+          "post_label": "Navy Commander / U.S.S. Lincoln"
+        },
+        {
+          "publish_date": "2026-07-23",
+          "description": "We're lucky to have been joined this week by Dani Bensky, an artist, advocate, and survivor of Jeffrey Epstein's abuse. She joins Liz to discuss her experience testifying at Todd B",
+          "post_type": "IG reel",
+          "url": "https://www.instagram.com/reel/DbJp9hNIhJA/",
+          "days_live": 36,
+          "maturity": "7+ days",
+          "views": 96685,
+          "reach": 79854,
+          "engagements": 7813,
+          "follows": 207,
+          "engagement_rate_views": 0.08080881212183896,
+          "post_label": "Dani Bensky episode"
+        }
+      ],
+      "instagram_weekly_mature": [
+        {
+          "week_start": "2026-06-22",
+          "posts": 4,
+          "views": 553729,
+          "reach": 413168,
+          "engagements": 75955,
+          "follows": 25020,
+          "engagement_rate_views": 0.1371699874848527
+        },
+        {
+          "week_start": "2026-06-29",
+          "posts": 3,
+          "views": 177965,
+          "reach": 132613,
+          "engagements": 19703,
+          "follows": 164,
+          "engagement_rate_views": 0.11071278060292754
+        },
+        {
+          "week_start": "2026-07-06",
+          "posts": 2,
+          "views": 149593,
+          "reach": 110782,
+          "engagements": 10217,
+          "follows": 291,
+          "engagement_rate_views": 0.06829865033791688
+        },
+        {
+          "week_start": "2026-07-13",
+          "posts": 0,
+          "views": 0,
+          "reach": 0,
+          "engagements": 0,
+          "follows": 0,
+          "engagement_rate_views": null
+        },
+        {
+          "week_start": "2026-07-20",
+          "posts": 2,
+          "views": 289125,
+          "reach": 234988,
+          "engagements": 22749,
+          "follows": 460,
+          "engagement_rate_views": 0.0786822308690013
+        },
+        {
+          "week_start": "2026-07-27",
+          "posts": 1,
+          "views": 36240,
+          "reach": 28450,
+          "engagements": 2044,
+          "follows": 35,
+          "engagement_rate_views": 0.05640176600441501
+        },
+        {
+          "week_start": "2026-08-03",
+          "posts": 2,
+          "views": 49294,
+          "reach": 39363,
+          "engagements": 2138,
+          "follows": 21,
+          "engagement_rate_views": 0.04337241854992494
+        },
+        {
+          "week_start": "2026-08-10",
+          "posts": 2,
+          "views": 273979,
+          "reach": 212366,
+          "engagements": 33207,
+          "follows": 16852,
+          "engagement_rate_views": 0.12120271991648995
+        },
+        {
+          "week_start": "2026-08-17",
+          "posts": 2,
+          "views": 152267,
+          "reach": 105008,
+          "engagements": 11434,
+          "follows": 307,
+          "engagement_rate_views": 0.07509177957141075
+        }
+      ],
+      "youtube_product_summary": [
+        {
+          "product": "Shorts",
+          "published_videos": 23,
+          "measured_videos": 22,
+          "videos_with_missing_metrics": 1,
+          "views": 250380,
+          "watch_hours": 2021.8,
+          "engagements": 24587,
+          "engagement_rate_views": 0.09819873791836409,
+          "subscribers_gained": 3338,
+          "average_pct_viewed_weighted": 47.78444937256301,
+          "median_views_measured": 4277.5
+        },
+        {
+          "product": "Long-Form",
+          "published_videos": 18,
+          "measured_videos": 13,
+          "videos_with_missing_metrics": 5,
+          "views": 218003,
+          "watch_hours": 43243.8,
+          "engagements": 13916,
+          "engagement_rate_views": 0.06383398393600088,
+          "subscribers_gained": 3785,
+          "average_pct_viewed_weighted": 28.22663343848192,
+          "median_views_measured": 4627.0
+        }
+      ],
+      "youtube_weekly_mature": [
+        {
+          "week_start": "2026-06-22",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 6522.0,
+          "watch_hours": 1887.5125,
+          "engagements": 983.0,
+          "subscribers_gained": 363.0
+        },
+        {
+          "week_start": "2026-06-22",
+          "product": "Shorts",
+          "published_videos": 3,
+          "measured_videos": 3,
+          "views": 81857.0,
+          "watch_hours": 450.3222,
+          "engagements": 9653.0,
+          "subscribers_gained": 2702.0
+        },
+        {
+          "week_start": "2026-06-29",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 49622.0,
+          "watch_hours": 18525.4983,
+          "engagements": 1480.0,
+          "subscribers_gained": 369.0
+        },
+        {
+          "week_start": "2026-06-29",
+          "product": "Shorts",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 23664.0,
+          "watch_hours": 218.6383,
+          "engagements": 2036.0,
+          "subscribers_gained": 119.0
+        },
+        {
+          "week_start": "2026-07-06",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 11911.0,
+          "watch_hours": 2711.1637,
+          "engagements": 1111.0,
+          "subscribers_gained": 291.0
+        },
+        {
+          "week_start": "2026-07-06",
+          "product": "Shorts",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 8197.0,
+          "watch_hours": 93.9769,
+          "engagements": 1080.0,
+          "subscribers_gained": 17.0
+        },
+        {
+          "week_start": "2026-07-13",
+          "product": "Shorts",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 1828.0,
+          "watch_hours": 2.2537,
+          "engagements": 63.0,
+          "subscribers_gained": 2.0
+        },
+        {
+          "week_start": "2026-07-20",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 5536.0,
+          "watch_hours": 592.1357,
+          "engagements": 720.0,
+          "subscribers_gained": 144.0
+        },
+        {
+          "week_start": "2026-07-20",
+          "product": "Shorts",
+          "published_videos": 2,
+          "measured_videos": 2,
+          "views": 26510.0,
+          "watch_hours": 373.6643,
+          "engagements": 3837.0,
+          "subscribers_gained": 132.0
+        },
+        {
+          "week_start": "2026-07-27",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 1556.0,
+          "watch_hours": 254.9847,
+          "engagements": 246.0,
+          "subscribers_gained": 26.0
+        },
+        {
+          "week_start": "2026-07-27",
+          "product": "Shorts",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 3603.0,
+          "watch_hours": 32.8545,
+          "engagements": 463.0,
+          "subscribers_gained": 4.0
+        },
+        {
+          "week_start": "2026-08-03",
+          "product": "Long-Form",
+          "published_videos": 1,
+          "measured_videos": 1,
+          "views": 5098.0,
+          "watch_hours": 661.0081,
+          "engagements": 543.0,
+          "subscribers_gained": 77.0
+        },
+        {
+          "week_start": "2026-08-03",
+          "product": "Shorts",
+          "published_videos": 2,
+          "measured_videos": 2,
+          "views": 7179.0,
+          "watch_hours": 65.393,
+          "engagements": 544.0,
+          "subscribers_gained": 10.0
+        },
+        {
+          "week_start": "2026-08-10",
+          "product": "Long-Form",
+          "published_videos": 6,
+          "measured_videos": 1,
+          "views": 4627.0,
+          "watch_hours": 50.1455,
+          "engagements": 985.0,
+          "subscribers_gained": 809.0
+        },
+        {
+          "week_start": "2026-08-10",
+          "product": "Shorts",
+          "published_videos": 2,
+          "measured_videos": 2,
+          "views": 8555.0,
+          "watch_hours": 65.7149,
+          "engagements": 1207.0,
+          "subscribers_gained": 112.0
+        },
+        {
+          "week_start": "2026-08-17",
+          "product": "Long-Form",
+          "published_videos": 4,
+          "measured_videos": 4,
+          "views": 131054.0,
+          "watch_hours": 18468.7307,
+          "engagements": 7764.0,
+          "subscribers_gained": 1700.0
+        },
+        {
+          "week_start": "2026-08-17",
+          "product": "Shorts",
+          "published_videos": 2,
+          "measured_videos": 2,
+          "views": 80174.0,
+          "watch_hours": 617.1894,
+          "engagements": 4520.0,
+          "subscribers_gained": 233.0
+        }
+      ],
+      "data_quality": [
+        {
+          "source": "Apple Podcasts",
+          "grain": "one row per episode",
+          "rows": 10,
+          "date_start": "2026-06-03",
+          "date_end": "2026-08-27",
+          "duplicate_keys": 0,
+          "missing_headline_metrics": 0,
+          "quality_note": "Newest episode is under seven days old; average consumption can exceed 100% when listeners replay audio."
+        },
+        {
+          "source": "Instagram",
+          "grain": "one row per post",
+          "rows": 20,
+          "date_start": "2026-06-23",
+          "date_end": "2026-08-27",
+          "duplicate_keys": 0,
+          "missing_headline_metrics": 0,
+          "quality_note": "Lifetime metrics are cumulative and recent posts have less time to mature; permalink is used as the stable key because exported post IDs are displayed in scientific notation."
+        },
+        {
+          "source": "YouTube",
+          "grain": "one row per video upload",
+          "rows": 41,
+          "date_start": "2026-06-23",
+          "date_end": "2026-08-27",
+          "duplicate_keys": 0,
+          "missing_headline_metrics": 6,
+          "quality_note": "6 uploads have no performance metrics (5 long-form, 1 shorts); they remain in published-video counts but are excluded from measured averages and rankings."
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "apple_csv",
+      "label": "Apple Podcasts episode export",
+      "path": "apple podcast.csv",
+      "query": {
+        "engine": "python",
+        "language": "python",
+        "query": "pd.read_csv('apple podcast.csv'); derive 7-day maturity, engaged_listener_rate, plays_per_listener, and episode aggregates",
+        "sql": "SELECT release_date, episode, days_live, maturity, unique_listeners, engaged_listeners, engaged_rate, plays, plays_per_listener, average_consumption_pct FROM normalized_apple_episode_performance",
+        "description": "Episode-level Apple Podcasts metrics normalized and ranked using a seven-day maturity rule.",
+        "executed_at": "2026-08-28T23:00:00Z",
+        "tables_used": [
+          "apple podcast.csv"
+        ],
+        "metric_definitions": [
+          "Mature episode: at least 7 days since release as of 2026-08-28.",
+          "Engaged-listener rate = unique engaged listeners / unique listeners across mature episodes.",
+          "Average consumption is listener-weighted across mature episodes and may exceed 100% with replay behavior."
+        ]
+      }
+    },
+    {
+      "id": "instagram_csv",
+      "label": "Instagram post export",
+      "path": "instagram is this really legal.csv",
+      "query": {
+        "engine": "python",
+        "language": "python",
+        "query": "pd.read_csv('instagram is this really legal.csv'); engagements = likes + shares + comments + saves; group mature posts by publish week",
+        "sql": "SELECT publish_date, description, post_type, url, days_live, maturity, views, reach, engagements, follows, engagement_rate_views FROM normalized_instagram_post_performance",
+        "description": "Post-level lifetime metrics normalized with a seven-day maturity rule for rankings and weekly publish cohorts.",
+        "executed_at": "2026-08-28T23:00:00Z",
+        "tables_used": [
+          "instagram is this really legal.csv"
+        ],
+        "metric_definitions": [
+          "Engagements = likes + shares + comments + saves.",
+          "View-based engagement rate = engagements / views.",
+          "Weekly views are lifetime post totals grouped by publish week, not activity earned during that week."
+        ]
+      }
+    },
+    {
+      "id": "youtube_xlsx",
+      "label": "YouTube performance workbook",
+      "path": "liz_oyer_youtube_performance_2026.xlsx",
+      "query": {
+        "engine": "python",
+        "language": "python",
+        "query": "pd.read_excel('liz_oyer_youtube_performance_2026.xlsx', sheet_name=['Long Data','Shorts Data']); exclude missing-view rows from measured rankings",
+        "sql": "SELECT publish_date, title, product, content_id, days_live, maturity, views, watch_hours, engagements, subscribers_gained, average_pct_viewed, impressions_ctr_pct FROM normalized_youtube_video_performance",
+        "description": "Individual YouTube video rows through 2026-08-28, separated into Long-Form and Shorts without aggregate Total rows.",
+        "executed_at": "2026-08-28T23:00:00Z",
+        "tables_used": [
+          "Long Data",
+          "Shorts Data",
+          "Overview",
+          "Definitions"
+        ],
+        "metric_definitions": [
+          "Measured video: an individual video row with a non-null Views value.",
+          "Weekly views are current cumulative video totals grouped by publish week.",
+          "Long-Form and Shorts are separated; aggregate Total rows are excluded."
+        ]
+      }
+    },
+    {
+      "id": "quality_qa",
+      "label": "Three-source data quality profile",
+      "path": "work/itrl_analysis/validation.json",
+      "query": {
+        "engine": "python",
+        "language": "python",
+        "query": "validate_analysis.py; reconcile row counts, identifiers, nonnegative metrics, and YouTube Overview totals",
+        "sql": "SELECT source, grain, rows, date_start, date_end, duplicate_keys, missing_headline_metrics, quality_note FROM normalized_data_quality",
+        "description": "Independent QA profile covering all three input exports; 18 of 18 validation checks passed.",
+        "executed_at": "2026-08-28T23:00:00Z",
+        "tables_used": [
+          "apple podcast.csv",
+          "instagram is this really legal.csv",
+          "liz_oyer_youtube_performance_2026.xlsx"
+        ]
+      }
+    }
+  ]
+}
