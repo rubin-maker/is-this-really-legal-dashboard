@@ -2,7 +2,8 @@
 """Prepare ISRL exports without changing the published dashboard.
 
 Raw exports remain in the supplied directory. Prepared records are local-only.
-Substack provenance was confirmed by the user. YouTube reporting scope is pending.
+Substack provenance and all-player podcast scope were confirmed by the user.
+YouTube reporting scope is pending.
 """
 
 import argparse
@@ -149,19 +150,17 @@ def main():
             "source_file": podcast_path.name, "source_row": line,
         })
     report = {
-        "status": "awaiting_reporting_range_and_remaining_platform_data",
+        "status": "prepared_youtube_reporting_range_unconfirmed",
         "youtube_sources": sources,
         "podcast_source": {
             **metadata(podcast_path), "service": "Substack", "service_confirmed_by": "user",
+            "player_scope": "All podcast players", "scope_confirmed_by": "user",
             "episodes": len(episodes),
             "downloads_total": numeric_sum(episodes, "downloads_total"),
-            "note": "Substack downloads are not Apple unique listeners or plays. Keep separate from Apple metrics.",
+            "note": "Use this export for all-player podcast downloads. Replace the older, overlapping Apple-only series; do not add its plays or listener counts.",
         },
         "pending": [
-            "Confirm whether to add Substack to the originally requested Apple, Instagram, and YouTube dashboard.",
-            "Receive refreshed Apple Podcasts export if Apple metrics are to be updated.",
             "Confirm YouTube analytics reporting range before labeling metrics lifetime or year-to-date.",
-            "Receive refreshed Instagram post-level export.",
         ],
         "rules": [
             "Total rows are reconciliation controls, never content records.",

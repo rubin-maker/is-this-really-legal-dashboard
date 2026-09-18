@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build the public ISRL dashboard data from ISRL-only exports.
 
-Raw source files stay outside the repository. Substack is staged separately and
-is not silently relabeled as Apple Podcasts. Weekly charts group exported
+Raw source files stay outside the repository. The user-confirmed all-player
+podcast totals come from the Substack export. Weekly charts group exported
 content metrics by publication week, not by the week activity was earned.
 """
 
@@ -14,7 +14,6 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
-from statistics import median
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,8 +21,9 @@ DEFAULT_HISTORICAL = Path(
     "/Users/barryrubin/Library/Mobile Documents/com~apple~CloudDocs/Video Projects/ISRL Data/Aug 28th"
 )
 DEFAULT_INSTAGRAM = DEFAULT_HISTORICAL.parent / "26-9-18/26-9-18-ITRL instagram stats.csv"
+DEFAULT_PODCAST = DEFAULT_HISTORICAL.parent / "26-9-18/is this really legal padcast numbers 26-9-18.csv"
 ADDITIVE = (
-    "value", "views", "plays", "engagements", "watch_hours", "subscribers_gained",
+    "value", "views", "downloads", "downloads_first_30_days", "engagements", "watch_hours", "subscribers_gained",
     "subscribers", "likes", "shares", "comments", "saves", "follows", "reach", "impressions",
 )
 
@@ -53,16 +53,17 @@ def sum_known(rows, key, empty=0):
     return number(sum(values))
 
 
-def apple_records(path):
+def podcast_records(path):
     records = []
     for raw in read_csv(path):
+        published = datetime.fromisoformat(raw["Date"]).date().isoformat()
         records.append({
-            "id": raw["Episode ID"], "title": raw["Episode Title"],
-            "date": raw["Release Date"], "week_start": monday(raw["Release Date"]).isoformat(),
-            "url": None, "category": "Episodes", "value": number(raw["Plays"]),
-            "plays": number(raw["Plays"]), "listeners": number(raw["Unique Listeners"]),
-            "engaged_listeners": number(raw["Unique Engaged Listeners"]),
-            "average_consumption": number(raw["Average Consumption"]),
+            "id": hashlib.sha256((raw["Title"] + "|" + raw["Date"]).encode()).hexdigest()[:20],
+            "title": raw["Title"], "date": published, "week_start": monday(published).isoformat(),
+            "url": None, "category": "Episodes", "value": number(raw["Total"]),
+            "downloads": number(raw["Total"]),
+            "downloads_first_30_days": number(raw["Downloads (first 30d)"]),
+            "shares": number(raw["Shares"]),
             "engagements": None, "weekly_eligible": True,
         })
     return records
@@ -164,15 +165,19 @@ def main():
     parser.add_argument("--intake", type=Path, default=ROOT / "work/intake-2026-09-18")
     parser.add_argument("--instagram", type=Path, default=DEFAULT_INSTAGRAM)
     parser.add_argument("--instagram-cutoff", type=date.fromisoformat, default=date(2026, 9, 18))
+    parser.add_argument("--podcast", type=Path, default=DEFAULT_PODCAST)
+    parser.add_argument("--podcast-cutoff", type=date.fromisoformat, default=date(2026, 9, 18))
     parser.add_argument("--output", type=Path, default=ROOT / "data/dashboard.json")
     args = parser.parse_args()
 
-    apple = apple_records(args.historical / "apple podcast.csv")
+    podcast = podcast_records(args.podcast)
     instagram = instagram_records(args.instagram)
     youtube = youtube_records(args.intake / "youtube_records.json")
     intake = json.loads((args.intake / "intake_report.json").read_text())
-    # Reconcile the complete historical source rows with the previous dashboard.
-    assert len(apple) == 10 and sum_known(apple, "plays") == 61513
+    # Podcast totals replace the overlapping, older Apple-only snapshot.
+    assert len(podcast) == 14 and sum_known(podcast, "downloads") == 92470
+    assert all(r["date"] <= args.podcast_cutoff.isoformat() for r in podcast)
+    assert all(r["downloads"] >= r["downloads_first_30_days"] >= 0 for r in podcast)
     historical_instagram = instagram_records(args.historical / "instagram is this really legal.csv")
     assert {r["id"] for r in historical_instagram} <= {r["id"] for r in instagram}, "Instagram refresh is missing historical posts"
     assert all(r["date"] <= args.instagram_cutoff.isoformat() for r in instagram)
@@ -181,7 +186,7 @@ def main():
     assert sum(r["weekly_eligible"] for r in youtube) == 41
 
     updated = "2026-09-18"
-    first = monday(min(r["date"] for r in apple + instagram + youtube if r["date"]))
+    first = monday(min(r["date"] for r in podcast + instagram + youtube if r["date"]))
     final = monday(updated)
     weeks = []
     while first <= final:
@@ -213,17 +218,26 @@ def main():
             "supported_metrics": ["value", "views", "engagements", "reach", "likes", "shares", "comments", "saves", "follows"],
         },
         {
-            "id": "apple", "label": "Apple Podcasts", "color": "#38bdf8", "metric": "Plays",
-            "cutoff": "2026-08-28", "cutoff_confirmed": True, "freshness": "August 28 snapshot",
-            "refresh_pending": True,
-            "coverage_note": "Complete 10-episode Apple export from August 28. Plays are additive; episode unique listeners must not be added as an account audience total.",
+            "id": "podcast", "label": "Podcasts · all players", "color": "#38bdf8", "metric": "Downloads",
+            "source_service": "Substack", "player_scope": "All podcast players", "scope_confirmed_by": "user",
+            "cutoff": args.podcast_cutoff.isoformat(), "cutoff_confirmed": False, "freshness": "Updated export",
+            "refresh_pending": False,
+            "coverage_note": f"All {len(podcast)} entries in the supplied Substack export, including the trailer and series introduction, with total downloads across all podcast players as confirmed by the user. Snapshot date uses the supplied {args.podcast_cutoff.strftime('%B %d')} export date. Downloads are not unique listeners.",
             "records_complete": True, "weekly_records_complete": True,
-            "records": apple, "supported_metrics": ["value", "plays"],
+            "records": podcast, "supported_metrics": ["value", "downloads", "downloads_first_30_days", "shares"],
         },
     ]
     platforms = [assemble_platform(p, weeks) for p in platforms]
-    platforms[2]["totals"]["median_episode_listeners"] = median(r["listeners"] for r in apple)
     sources = []
+    sources.append({
+        "platform": "podcast", "file": args.podcast.name,
+        "sha256": hashlib.sha256(args.podcast.read_bytes()).hexdigest(),
+        "records": len(podcast), "service": "Substack",
+        "player_scope": "All podcast players", "scope_confirmed_by": "user",
+        "metric_field": "Total", "metric": "Total downloads",
+        "secondary_metric_field": "Downloads (first 30d)",
+        "snapshot_date": args.podcast_cutoff.isoformat(),
+    })
     sources.append({
         "platform": "instagram", "file": args.instagram.name,
         "sha256": hashlib.sha256(args.instagram.read_bytes()).hexdigest(),
@@ -246,24 +260,26 @@ def main():
         "notes": [
             "Weekly charts group exported content performance by its publication week. They do not measure activity earned during that week.",
             "Instagram uses lifetime post metrics. YouTube is labeled exported views because its analytics reporting range has not been confirmed.",
-            "Each platform keeps its own metric. YouTube and Instagram views are not added to Apple plays, and episode unique listeners are not deduplicated across episodes.",
+            "Each platform keeps its own metric. YouTube and Instagram views are not added to podcast downloads. Downloads do not represent a count of unique listeners.",
             "Instagram reach is summed across posts and is not a deduplicated account audience count.",
-            f"Instagram uses the {args.instagram_cutoff.strftime('%B %d')} export; all {len(historical_instagram)} previously included posts have refreshed metrics, with {len(instagram)-len(historical_instagram)} additional posts. Apple retains the August 28 snapshot. Weeks beyond a platform's cutoff are unavailable, not zero; cutoff weeks may be partial.",
+            f"Instagram uses the {args.instagram_cutoff.strftime('%B %d')} export; all {len(historical_instagram)} previously included posts have refreshed metrics, with {len(instagram)-len(historical_instagram)} additional posts. Weeks beyond a platform's cutoff are unavailable, not zero; cutoff weeks may be partial.",
             "The supplied Instagram export includes three posts credited to lawyer_oyer alongside 26 credited to isthisreallylegal. All 29 supplied posts are included and deduplicated by permalink.",
             "YouTube includes 51 export rows: 41 dated videos and 10 Shorts without publish dates. The undated Shorts account for four known views; three also have missing view metrics.",
             "YouTube headline and weekly views use 779,134 views from 41 dated videos. All 51 detail rows contain 779,138 known views, including four views on undated Shorts. Export Total rows report 779,159 views; the 21-view discrepancy is not assigned to content or weeks.",
-            "The supplied podcast refresh is Substack data and remains staged separately. It is not substituted for Apple Podcasts metrics.",
+            f"Podcasts use all {len(podcast)} entries and {sum_known(podcast, 'downloads'):,} total downloads from the {args.podcast_cutoff.strftime('%B %d')} Substack export. The user confirmed that these totals cover all podcast players. The earlier Apple-only snapshot is replaced, not added, to avoid overlapping counts.",
+            "Podcast publish dates come directly from the source Date field. First-30-day downloads use the source field and remain in progress for episodes younger than 30 days at the snapshot.",
         ],
         "qa": {
             "sources": sources,
             "source_checks": {
-                "apple_records": len(apple), "apple_plays": sum_known(apple, "plays"),
+                "podcast_records": len(podcast), "podcast_downloads": sum_known(podcast, "downloads"),
                 "instagram_records": len(instagram), "instagram_views": sum_known(instagram, "views"),
                 "instagram_engagements": sum_known(instagram, "engagements"),
             },
             "youtube_undated_ids": [r["id"] for r in youtube if not r["weekly_eligible"]],
             "youtube_missing_value_ids": [r["id"] for r in youtube if r["value"] is None],
-            "substack_staged": True,
+            "podcast_source": "Substack",
+            "podcast_player_scope_confirmed_by": "user",
         },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

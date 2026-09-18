@@ -1,6 +1,6 @@
 # Is This Really Legal? Performance Dashboard
 
-An independent dashboard for Is This Really Legal’s YouTube, Instagram, and Apple Podcasts exports. Its visual layout follows the Home of the Brave reference, with no runtime or data dependency on that project.
+An independent dashboard for Is This Really Legal’s YouTube, Instagram, and all-player podcast exports. Its visual layout follows the Home of the Brave reference, with no runtime or data dependency on that project.
 
 ## Features
 
@@ -12,11 +12,11 @@ An independent dashboard for Is This Really Legal’s YouTube, Instagram, and Ap
 
 ## Current data
 
-The September 18 redesign uses the September 17 YouTube CSVs, September 18 Instagram export, and August 28 Apple Podcasts snapshot. Only the Apple export remains pending. Instagram includes all 20 previously displayed posts with refreshed metrics plus 9 new posts, for 29 posts and 2,547,364 lifetime views. Three supplied Instagram rows are credited to lawyer_oyer; these are retained as part of the user-provided export. The supplied Substack download file remains separate; its metrics have not been substituted for Apple’s.
+The September 18 redesign uses the September 17 YouTube CSVs, September 18 Instagram export, and September 18 podcast snapshot from Substack. The user confirmed that the podcast export covers all podcast players: 14 episodes totaling 92,470 downloads. Downloads are not unique audience. Instagram includes all 20 previously displayed posts with refreshed metrics plus 9 new posts, for 29 posts and 2,547,364 lifetime views. Three supplied Instagram rows are credited to lawyer_oyer; these are retained as part of the user-provided export.
 
 YouTube graphs and headline views use 41 dated uploads with 779,134 views. Ten undated Shorts are retained in the reviewed snapshot but excluded from publication-week allocation; they contain four additional known views and three missing view values. The CSV reporting range is unconfirmed, so YouTube metrics are labeled exported values. The YouTube Total rows differ from summed detail rows, and those differences are preserved in the snapshot’s QA metadata.
 
-Weeks run Monday–Sunday. Values represent exported performance of content published in that week, not activity earned within the week. Apple plays are kept separate from social views, and unique listeners are never summed across episodes. Subscriber gains use the explicit Subscribers gained field, with one missing dated-video value disclosed.
+Weeks run Monday–Sunday. Values represent exported performance of content published in that week, not activity earned within the week. All-player podcast downloads are kept separate from social views. The podcast “First 30 days” column reports each episode’s exported downloads during its first 30 days; the format table sums those values. Subscriber gains use the explicit Subscribers gained field, with one missing dated-video value disclosed.
 
 ## Build and preview
 
