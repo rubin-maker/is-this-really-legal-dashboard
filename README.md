@@ -12,7 +12,7 @@ An independent dashboard for Is This Really Legal’s YouTube, Instagram, and Ap
 
 ## Current data
 
-The September 18 redesign uses the September 17 YouTube CSVs and August 28 Apple Podcasts and Instagram snapshots. Updated Instagram and Apple exports are pending. The supplied Substack download file remains separate; its metrics have not been substituted for Apple’s.
+The September 18 redesign uses the September 17 YouTube CSVs, September 18 Instagram export, and August 28 Apple Podcasts snapshot. Only the Apple export remains pending. Instagram includes all 20 previously displayed posts with refreshed metrics plus 9 new posts, for 29 posts and 2,547,364 lifetime views. Three supplied Instagram rows are credited to lawyer_oyer; these are retained as part of the user-provided export. The supplied Substack download file remains separate; its metrics have not been substituted for Apple’s.
 
 YouTube graphs and headline views use 41 dated uploads with 779,134 views. Ten undated Shorts are retained in the reviewed snapshot but excluded from publication-week allocation; they contain four additional known views and three missing view values. The CSV reporting range is unconfirmed, so YouTube metrics are labeled exported values. The YouTube Total rows differ from summed detail rows, and those differences are preserved in the snapshot’s QA metadata.
 

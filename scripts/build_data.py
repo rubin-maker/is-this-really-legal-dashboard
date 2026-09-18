@@ -8,6 +8,7 @@ content metrics by publication week, not by the week activity was earned.
 
 import argparse
 import csv
+import hashlib
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -20,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_HISTORICAL = Path(
     "/Users/barryrubin/Library/Mobile Documents/com~apple~CloudDocs/Video Projects/ISRL Data/Aug 28th"
 )
+DEFAULT_INSTAGRAM = DEFAULT_HISTORICAL.parent / "26-9-18/26-9-18-ITRL instagram stats.csv"
 ADDITIVE = (
     "value", "views", "plays", "engagements", "watch_hours", "subscribers_gained",
     "subscribers", "likes", "shares", "comments", "saves", "follows", "reach", "impressions",
@@ -69,7 +71,15 @@ def apple_records(path):
 def instagram_records(path):
     records = []
     for raw in read_csv(path):
-        published = datetime.strptime(raw["Publish time"], "%m/%d/%y %H:%M").date()
+        published = None
+        for date_format in ("%m/%d/%Y %H:%M", "%m/%d/%y %H:%M"):
+            try:
+                published = datetime.strptime(raw["Publish time"], date_format).date()
+                break
+            except ValueError:
+                continue
+        if published is None:
+            raise ValueError(f"Unsupported Instagram publish date: {raw['Publish time']}")
         metrics = {key: number(raw[field]) for key, field in {
             "views": "Views", "reach": "Reach", "likes": "Likes", "shares": "Shares",
             "follows": "Follows", "comments": "Comments", "saves": "Saves",
@@ -80,6 +90,7 @@ def instagram_records(path):
             "title": raw["Description"].replace("\\n", "\n"),
             "date": published.isoformat(), "week_start": monday(published).isoformat(),
             "url": raw["Permalink"], "category": raw["Post type"],
+            "source_account": raw.get("Account username"),
             "value": metrics["views"], **metrics,
             "engagements": sum(parts) if all(x is not None for x in parts) else None,
             "weekly_eligible": True,
@@ -151,18 +162,21 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--historical", type=Path, default=DEFAULT_HISTORICAL)
     parser.add_argument("--intake", type=Path, default=ROOT / "work/intake-2026-09-18")
+    parser.add_argument("--instagram", type=Path, default=DEFAULT_INSTAGRAM)
+    parser.add_argument("--instagram-cutoff", type=date.fromisoformat, default=date(2026, 9, 18))
     parser.add_argument("--output", type=Path, default=ROOT / "data/dashboard.json")
     args = parser.parse_args()
 
     apple = apple_records(args.historical / "apple podcast.csv")
-    instagram = instagram_records(args.historical / "instagram is this really legal.csv")
+    instagram = instagram_records(args.instagram)
     youtube = youtube_records(args.intake / "youtube_records.json")
     intake = json.loads((args.intake / "intake_report.json").read_text())
     # Reconcile the complete historical source rows with the previous dashboard.
     assert len(apple) == 10 and sum_known(apple, "plays") == 61513
-    assert len(instagram) == 20 and sum_known(instagram, "views") == 1735711
-    assert sum_known(instagram, "engagements") == 180153
-    assert sum_known(instagram, "follows") == 43166
+    historical_instagram = instagram_records(args.historical / "instagram is this really legal.csv")
+    assert {r["id"] for r in historical_instagram} <= {r["id"] for r in instagram}, "Instagram refresh is missing historical posts"
+    assert all(r["date"] <= args.instagram_cutoff.isoformat() for r in instagram)
+    assert all(row.get("Date") == "Lifetime" for row in read_csv(args.instagram)), "Check Instagram metric period"
     assert len(youtube) == 51 and sum_known(youtube, "views") == 779138
     assert sum(r["weekly_eligible"] for r in youtube) == 41
 
@@ -183,6 +197,7 @@ def main():
         {
             "id": "youtube", "label": "YouTube", "color": "#fb7185", "metric": "Exported views",
             "cutoff": "2026-09-17", "cutoff_confirmed": False, "freshness": "Updated export",
+            "refresh_pending": False,
             "coverage_note": "September 17 cutoff inferred from filenames; the analytics reporting range is unconfirmed. Ten Shorts have no publish date and are excluded from weekly charts and rankings.",
             "records_complete": True, "weekly_records_complete": False,
             "records": youtube,
@@ -190,8 +205,9 @@ def main():
         },
         {
             "id": "instagram", "label": "Instagram", "color": "#c084fc", "metric": "Views",
-            "cutoff": "2026-08-28", "cutoff_confirmed": True, "freshness": "Refresh pending",
-            "coverage_note": "Complete 20-post export from August 28. September data is unavailable while the refreshed Instagram export is pending.",
+            "cutoff": args.instagram_cutoff.isoformat(), "cutoff_confirmed": False, "freshness": "Updated export",
+            "refresh_pending": False,
+            "coverage_note": f"Complete {len(instagram)}-post supplied export dated {args.instagram_cutoff.strftime('%B %d')}, with lifetime post metrics and publish dates through {max(r['date'] for r in instagram)}. Snapshot cutoff uses the supplied export date.",
             "records_complete": True, "weekly_records_complete": True,
             "records": instagram,
             "supported_metrics": ["value", "views", "engagements", "reach", "likes", "shares", "comments", "saves", "follows"],
@@ -199,6 +215,7 @@ def main():
         {
             "id": "apple", "label": "Apple Podcasts", "color": "#38bdf8", "metric": "Plays",
             "cutoff": "2026-08-28", "cutoff_confirmed": True, "freshness": "August 28 snapshot",
+            "refresh_pending": True,
             "coverage_note": "Complete 10-episode Apple export from August 28. Plays are additive; episode unique listeners must not be added as an account audience total.",
             "records_complete": True, "weekly_records_complete": True,
             "records": apple, "supported_metrics": ["value", "plays"],
@@ -207,6 +224,16 @@ def main():
     platforms = [assemble_platform(p, weeks) for p in platforms]
     platforms[2]["totals"]["median_episode_listeners"] = median(r["listeners"] for r in apple)
     sources = []
+    sources.append({
+        "platform": "instagram", "file": args.instagram.name,
+        "sha256": hashlib.sha256(args.instagram.read_bytes()).hexdigest(),
+        "records": len(instagram), "reporting_range": "Lifetime",
+        "snapshot_date": args.instagram_cutoff.isoformat(),
+        "prior_records_refreshed": len(historical_instagram),
+        "new_records": len(instagram) - len(historical_instagram),
+        "source_accounts": {account: sum(r["source_account"] == account for r in instagram)
+                            for account in sorted({r["source_account"] for r in instagram})},
+    })
     for source in intake["youtube_sources"]:
         sources.append({
             "platform": "youtube", "file": source["file"], "category": source["product"],
@@ -221,14 +248,15 @@ def main():
             "Instagram uses lifetime post metrics. YouTube is labeled exported views because its analytics reporting range has not been confirmed.",
             "Each platform keeps its own metric. YouTube and Instagram views are not added to Apple plays, and episode unique listeners are not deduplicated across episodes.",
             "Instagram reach is summed across posts and is not a deduplicated account audience count.",
-            "Apple and Instagram retain the August 28 snapshot. Weeks beyond their cutoff are unavailable, not zero. The cutoff week may be partial.",
+            f"Instagram uses the {args.instagram_cutoff.strftime('%B %d')} export; all {len(historical_instagram)} previously included posts have refreshed metrics, with {len(instagram)-len(historical_instagram)} additional posts. Apple retains the August 28 snapshot. Weeks beyond a platform's cutoff are unavailable, not zero; cutoff weeks may be partial.",
+            "The supplied Instagram export includes three posts credited to lawyer_oyer alongside 26 credited to isthisreallylegal. All 29 supplied posts are included and deduplicated by permalink.",
             "YouTube includes 51 export rows: 41 dated videos and 10 Shorts without publish dates. The undated Shorts account for four known views; three also have missing view metrics.",
             "YouTube headline and weekly views use 779,134 views from 41 dated videos. All 51 detail rows contain 779,138 known views, including four views on undated Shorts. Export Total rows report 779,159 views; the 21-view discrepancy is not assigned to content or weeks.",
             "The supplied podcast refresh is Substack data and remains staged separately. It is not substituted for Apple Podcasts metrics.",
         ],
         "qa": {
             "sources": sources,
-            "historical_source_checks": {
+            "source_checks": {
                 "apple_records": len(apple), "apple_plays": sum_known(apple, "plays"),
                 "instagram_records": len(instagram), "instagram_views": sum_known(instagram, "views"),
                 "instagram_engagements": sum_known(instagram, "engagements"),
