@@ -7,7 +7,7 @@ An independent dashboard for Is This Really Legal’s YouTube, Instagram, and al
 - Platform-specific headline metrics and selectable weekly mini charts
 - Weekly graphs with date labels, format toggles, Show All / Deselect All, and clickable contributor details
 - Weekly top-five posts and episodes, with desktop tabs and a mobile selector
-- Eight-week comparison, YouTube subscriber gains by publish week, format tables, and searchable content
+- Eight-week comparison, Instagram follower and YouTube subscriber gains by publish week, format tables, and searchable content
 - Separate cutoff dates, partial weeks, and unavailable-data states for each platform
 
 ## Current data
@@ -17,6 +17,8 @@ The September 18 redesign uses the September 17 YouTube CSVs, September 18 Insta
 YouTube graphs and headline views use 41 dated uploads with 779,134 views. Ten undated Shorts are retained in the reviewed snapshot but excluded from publication-week allocation; they contain four additional known views and three missing view values. The CSV reporting range is unconfirmed, so YouTube metrics are labeled exported values. The YouTube Total rows differ from summed detail rows, and those differences are preserved in the snapshot’s QA metadata.
 
 Weeks run Monday–Sunday. Values represent exported performance of content published in that week, not activity earned within the week. All-player podcast downloads are kept separate from social views. The podcast “First 30 days” column reports each episode’s exported downloads during its first 30 days; the format table sums those values. Subscriber gains use the explicit Subscribers gained field, with one missing dated-video value disclosed.
+
+Instagram follows attributed to the 29 supplied posts total 45,385; known YouTube subscribers gained total 8,576. Both metrics appear in headline cards, weekly chart metric selectors with contributor details, the audience-gains table, and post tables. These exports do not provide current account-wide follower or subscriber counts. Instagram follows include 45,162 from rows credited to isthisreallylegal and 223 from rows credited to lawyer_oyer.
 
 ## Build and preview
 
