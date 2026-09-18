@@ -8,7 +8,7 @@ const routes = new Map([
   ["/", "index.html"],
   ["/index.html", "index.html"],
   ["/dashboard.html", "dashboard.html"],
-  ["/artifact.json", "artifact.json"],
+  ["/artifact.json", "data/dashboard.json"],
 ]);
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
@@ -48,6 +48,6 @@ createServer((request, response) => {
     "x-content-type-options": "nosniff",
   });
   createReadStream(path).pipe(response);
-}).listen(port, "0.0.0.0", () => {
+}).listen(port, process.env.HOST || "0.0.0.0", () => {
   console.log(`Is This Really Legal dashboard listening on port ${port}`);
 });
