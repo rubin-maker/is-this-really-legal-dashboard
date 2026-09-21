@@ -22,7 +22,7 @@ const colors = ["#a51d2d","#2166ac","#2a9d8f","#d97706","#7c3aed"];
 const categoryColor = (p,c) => c==="All formats"?"var(--ink)":colors[cats(p).indexOf(c)%colors.length];
 const safeUrl = u => /^https:\/\/(www\.)?(youtube\.com|instagram\.com)\//.test(u||"")?u:null;
 const titleLink = r => safeUrl(r.url)?`<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.title)}</a>`:esc(r.title);
-const state = Object.fromEntries(PLATS.map(p=>[p.id,{metric:"value",hidden:new Set(),point:null,spark:null}]));
+const state = Object.fromEntries(PLATS.map(p=>[p.id,{metric:"value",hidden:new Set(),point:null}]));
 const audienceKey = p => p.id==="instagram"?"follows":p.id==="youtube"?"subscribers_gained":null;
 const metricLabel = (p,m) => m==="value"?unit(p):m==="posts"?contentUnit(p):m==="follows"?"followers gained":m==="subscribers_gained"?"subscribers gained":"engagements";
 const audienceNote = p => p.id==="instagram"?"Follows attributed to the 29 exported posts, including shared source-account posts. This is not the account’s current follower total.":"Known subscribers gained from exported videos. One dated video has no value. This is not the channel’s current subscriber total.";
@@ -42,20 +42,6 @@ $("hero").innerHTML = [
  ["Instagram followers gained",sum(records(ig),"follows"),"Attributed to 29 exported posts"],
  ["YouTube subscribers gained",sum(records(yt),"subscribers_gained"),"Known video gains · 1 value missing"],
 ].map(([label,value,detail])=>`<div class="card tile"><div class="label">${label}</div><div class="value">${fmt(value)}</div><div class="detail">${detail}</div></div>`).join("");
-
-function platformCard(p){
- const available=p.weekly.filter(covered).slice(-8);
- const selected=state[p.id].spark||latestComplete(p)?.start||available.at(-1)?.start;
- state[p.id].spark=selected;
- const row=available.find(r=>r.start===selected)||weekData(p,selected);
- const max=Math.max(1,...available.map(r=>r.value));
- const bars=available.map((r,i)=>{const h=Math.max(1,32*r.value/max),label=`${p.label}, ${span(r.start,coveredEnd(p,r))}, ${full(r.value)} ${unit(p)}, ${status(p,r.start)}`;return `<g role="button" tabindex="0" class="spark-bar ${r.start===selected?"selected":""}" data-spark="${p.id}" data-week="${r.start}" aria-pressed="${r.start===selected}" aria-label="${esc(label)}"><rect class="spark-hit" x="${i*20}" y="0" width="20" height="38"/><rect class="spark-fill ${r.partial?"partial":""}" x="${i*20+2}" y="${36-h}" width="14" height="${h}" rx="2" fill="${p.color}" opacity=".48"/><title>${esc(label)}</title></g>`}).join("");
- return `<article class="card tile platform-card" style="--platform:${p.color}" id="platform-${p.id}"><div class="label">${dot(p)}${p.label}</div><div class="platform-metrics${audienceKey(p)?" paired":""}"><div class="value">${fmt(row?.value)} <span class="value-unit">${unit(p)}</span></div>${audienceKey(p)?`<div class="value audience-value">${fmt(primary(p,selected,"All formats",audienceKey(p)))} <span class="value-unit">${metricLabel(p,audienceKey(p))}</span></div>`:""}</div><div class="detail">${span(row.start,coveredEnd(p,row))} · ${row.posts} ${contentUnit(p)}</div><div class="spark-help">Select a week for exact stats.</div><svg class="spark" viewBox="0 0 160 38" preserveAspectRatio="none" aria-label="${p.label} weekly trend">${bars}</svg><div class="spark-range"><span>${date(available[0].start)}</span><span>${date(coveredEnd(p,available.at(-1)))}${available.at(-1).partial?" · partial":""}</span></div><div class="spark-readout" aria-live="polite"><strong>${span(row.start,coveredEnd(p,row))}, 2026</strong>${full(row.value)} ${unit(p)}${audienceKey(p)?` · ${full(primary(p,selected,"All formats",audienceKey(p)))} ${metricLabel(p,audienceKey(p))}`:""} · ${row.posts} ${contentUnit(p)} · ${status(p,row.start)}</div><div class="freshness">${cutoffText(p)}${p.refresh_pending?" · update pending":""}</div></article>`;
-}
-function renderPlatforms(){
- $("platforms").innerHTML=PLATS.map(platformCard).join("");
- $("platforms").querySelectorAll("[data-spark]").forEach(b=>{const activate=()=>{state[b.dataset.spark].spark=b.dataset.week;renderPlatforms();document.querySelector(`[data-spark="${b.dataset.spark}"][data-week="${b.dataset.week}"]`)?.focus({preventScroll:true})};b.onclick=activate;b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate()}}});
-}
 
 function detail(p){
  const s=state[p.id],point=s.point;
@@ -131,4 +117,4 @@ $("search").oninput=renderAll;$("platformFilter").onchange=renderAll;
 
 $("definitions").innerHTML=PLATS.map(p=>`<div class="card"><h3>${dot(p)}${p.label}</h3><div class="definition"><b>Metric</b><span>${p.id==="podcast"?"All-player podcast downloads from the Substack export. Downloads are not unique audience. First 30 days shows downloads during each episode’s first 30 days, as reported in the export.":p.id==="instagram"?"Exported post views. Engagements = likes + comments + shares + saves. Followers gained uses the Follows field attributed to the supplied posts, not the current account total.":"Exported video views. Engagements = likes + comments + shares. Subscriber gains use Subscribers gained, not the separate Subscribers field or current channel audience."}</span><b>Data date</b><span>${cutoffText(p)}</span><b>Coverage</b><span>${esc(p.coverage_note)}</span></div></div>`).join("");
 $("sources").innerHTML=D.notes.map(n=>`<li>${esc(typeof n==="string"?n:JSON.stringify(n))}</li>`).join("");
-renderPlatforms();PLATS.forEach(p=>renderChart(p.id));renderTops(latest);renderSubscriber();renderCategories("youtube");renderAll();
+PLATS.forEach(p=>renderChart(p.id));renderTops(latest);renderSubscriber();renderCategories("youtube");renderAll();

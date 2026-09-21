@@ -4,7 +4,7 @@ An independent dashboard for Is This Really Legal’s YouTube, Instagram, and al
 
 ## Features
 
-- Platform-specific headline metrics and selectable weekly mini charts
+- Platform-specific headline metrics
 - Weekly graphs with date labels, format toggles, Show All / Deselect All, and clickable contributor details
 - Weekly top-five posts and episodes, with desktop tabs and a mobile selector
 - Eight-week comparison, Instagram follower and YouTube subscriber gains by publish week, format tables, and searchable content
