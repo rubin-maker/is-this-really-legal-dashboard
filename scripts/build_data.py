@@ -23,7 +23,7 @@ DEFAULT_HISTORICAL = Path(
 DEFAULT_INSTAGRAM = DEFAULT_HISTORICAL.parent / "26-9-18/26-9-18-ITRL instagram stats.csv"
 DEFAULT_PODCAST = DEFAULT_HISTORICAL.parent / "26-9-18/is this really legal padcast numbers 26-9-18.csv"
 ADDITIVE = (
-    "value", "views", "downloads", "downloads_first_30_days", "engagements", "watch_hours", "subscribers_gained",
+    "value", "views", "plays", "downloads", "downloads_first_30_days", "engagements", "watch_hours", "subscribers_gained",
     "subscribers", "likes", "shares", "comments", "saves", "follows", "reach", "impressions",
 )
 
