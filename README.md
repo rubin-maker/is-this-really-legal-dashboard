@@ -34,7 +34,7 @@ npm start
 
 The refresh script defaults to the five named CSVs in Downloads. Use its `--youtube`, `--instagram`, `--apple`, `--substack`, and `--tiktok` arguments to supply other paths. It is a dated November intake, not an automatic future refresh: new exports require renewed date/schema review. The legacy `scripts/build_data.py` builds the September snapshot and must not be used to regenerate the November release.
 
-Open `http://localhost:3000`. The page uses self-contained SVG charts and no external scripts or data requests. Rebuild after changes to `src/dashboard.html`, `src/dashboard.css`, `src/dashboard.js`, or the reviewed snapshot. The TikTok and Substack charts support metric/range selection, Show All / Deselect All, keyboard navigation, clickable daily detail, and an inspectable source table for the selected range.
+Open `http://localhost:3000`. The page serves its SVG chart code and stylesheet as versioned files from the same website. Reviewed data is bundled into the script; there are no external libraries or data requests. The server permits only same-origin scripts, so the dashboard no longer depends on inline script or style elements. Rebuild after changes to `src/dashboard.html`, `src/dashboard.css`, `src/dashboard.js`, or the reviewed snapshot. The TikTok and Substack charts support metric/range selection, Show All / Deselect All, keyboard navigation, clickable daily detail, and an inspectable source table for the selected range.
 
 Validation checked source rows, totals, weekly reconciliation, missing-date treatment, unchanged all-player records, generated-file identity, browser controls and layout. YouTube headline/detail reconciliation and inferred source dates remain disclosed.
 
@@ -48,4 +48,4 @@ Validation checked source rows, totals, weekly reconciliation, missing-date trea
 
 The service currently uses explicit uploads rather than a connected GitHub source. Always pass these exact project, environment, and service IDs when deploying. Do not relink or deploy to a Home of the Brave resource.
 
-The server exposes `/`, `/dashboard.html`, `/artifact.json`, and `/health`. Railway starts it with `npm start` and supplies `PORT`; `HOST` defaults to `0.0.0.0` and can be set to `127.0.0.1` for local preview.
+The server exposes `/`, `/dashboard.html`, `/artifact.json`, `/health`, and the two generated `/assets/dashboard.css` and `/assets/dashboard.js` files. Railway starts it with `npm start` and supplies `PORT`; `HOST` defaults to `0.0.0.0` and can be set to `127.0.0.1` for local preview.

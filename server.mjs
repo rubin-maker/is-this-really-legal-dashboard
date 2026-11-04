@@ -9,10 +9,14 @@ const routes = new Map([
   ["/index.html", "index.html"],
   ["/dashboard.html", "dashboard.html"],
   ["/artifact.json", "data/dashboard.json"],
+  ["/assets/dashboard.css", "assets/dashboard.css"],
+  ["/assets/dashboard.js", "assets/dashboard.js"],
 ]);
 const contentTypes = {
   ".html": "text/html; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
 };
 
 createServer((request, response) => {
@@ -43,7 +47,7 @@ createServer((request, response) => {
   response.writeHead(200, {
     "content-type": contentTypes[extname(path)] || "application/octet-stream",
     "cache-control": file.endsWith(".html") ? "no-cache" : "public, max-age=3600",
-    "content-security-policy": "default-src 'self' 'unsafe-inline' data: blob:; connect-src 'none'; frame-ancestors 'none'",
+    "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; frame-ancestors 'none'",
     "referrer-policy": "strict-origin-when-cross-origin",
     "x-content-type-options": "nosniff",
   });
